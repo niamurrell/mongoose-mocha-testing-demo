@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const PostSchema = require("./post");
 
 // Define schema model
 const UserSchema = new Schema({
@@ -12,7 +13,9 @@ const UserSchema = new Schema({
     // For validations set boolean & frontend-friendly error message:
     required: [true, "Name is required."]
   },
-  postCount: Number
+  postCount: Number,
+  // The following is an array of sub-documents, NOT a reference to another model
+  posts: [PostSchema]
 });
 
 // User class/model representing the entire collection of users
