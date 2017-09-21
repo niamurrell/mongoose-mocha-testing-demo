@@ -13,10 +13,15 @@ const UserSchema = new Schema({
     // For validations set boolean & frontend-friendly error message:
     required: [true, "Name is required."]
   },
-  postCount: Number,
   // The following is an array of sub-documents, NOT a reference to another model
-  posts: [PostSchema]
+  posts: [PostSchema],
+  likes: Number
 });
+
+// Add a virtual type to the model. This is a field that is updated and stored on the server, and is reliant on/a derivative of some aspect of the model. Must be created outside of the model. This uses ES6 getters & setters, i.e. no arrow functions!!
+UserSchema.virtual("postCount").get(function() {
+  return this.posts.length;
+})
 
 // User class/model representing the entire collection of users
 const User = mongoose.model("user", UserSchema);
