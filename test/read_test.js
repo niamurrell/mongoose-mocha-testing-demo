@@ -8,7 +8,10 @@ describe("Reading users out of the database", () => {
   // Add a user first to ensure it's there and available to run the test
   beforeEach((done) => {
     joe = new User({ name: "Joe" });
-    joe.save()
+    alex = new User({ name: "Alex" });
+    maria = new User({ name: "Maria" });
+    zach = new User({ name: "Zach" });
+    Promise.all([alex.save(), joe.save(), maria.save(), zach.save()])
       .then(() => done());
   })
 
@@ -27,6 +30,19 @@ describe("Reading users out of the database", () => {
         done();
       })
   })
+
+  it("can skip & limit the results set", (done) => {
+    User.find({})
+      .sort({ name: -1 })
+      .skip(1)
+      .limit(2)
+      .then((users) => {
+        assert(users[0].name === "Maria");
+        assert(users[1].name === "Joe");
+        assert(users.length === 2);
+        done();
+      })
+  });
 });
 
 // !! .toString() is required (line 18) because MongoDB stores ids as ObjectId's rather than strings, regardless of command line output
