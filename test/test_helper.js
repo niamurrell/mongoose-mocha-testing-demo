@@ -18,8 +18,14 @@ before((done) => {
 
 // For testing, drop all db data before running the test, lest you test old data and don't get the desired accurate results. Since the db connection takes time to complete, need to include a 'done' callback (from mocha).
 beforeEach((done) => {
-  mongoose.connection.collections.users.drop(() => {
-    // Callback function tells mocha when it's ok to run the next test
-    done();
+  // ES6 code goes to 'collections' on db to pull these consts. FYI by default Mongo puts everything into lowercase.
+  const { users, comments, blogposts } = mongoose.connection.collections;
+  users.drop(() => {
+    comments.drop(() => {
+      blogposts.drop(() => {
+        // Callback function tells mocha when it's ok to run the next test: must wait for data to drop before proceeding. Also they MUST happen sequentially, Mongo cannot do them at the same time.
+        done();
+      })
+    })
   });
 });
