@@ -29,6 +29,16 @@ UserSchema.virtual("postCount").get(function() {
   return this.posts.length;
 })
 
+// User model middleware. Uses 'this' so no arrow functions
+UserSchema.pre("remove", function(next) {
+  // Add the mongoose model instead of requiring at the top to avoid cyclical references
+  const BlogPost = mongoose.model("blogPost");
+  // User query operator to find all the ids in the BlogPost collection; if the id is IN this user's array of ids, remove it
+  BlogPost.remove({ _id: { $in: this.blogPosts } })
+    // Call next to let asynchronus code when it's time to start the next function
+    .then(() => next());
+});
+
 // User class/model representing the entire collection of users
 const User = mongoose.model("user", UserSchema);
 
